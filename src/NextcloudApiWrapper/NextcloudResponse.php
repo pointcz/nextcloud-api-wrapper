@@ -12,7 +12,7 @@ class NextcloudResponse
     protected $guzzle;
 
     /**
-     * @var \SimpleXMLElement
+     * @var array
      */
     protected $body;
 
@@ -21,7 +21,7 @@ class NextcloudResponse
         $this->guzzle   = $guzzle;
 
         try {
-            $this->body = new \SimpleXMLElement($guzzle->getBody()->getContents());
+            $this->body = json_decode($guzzle->getBody()->getContents(), true)['ocs'];
         } catch (\Exception $e) {
             throw new NCException($guzzle, "Failed parsing response");
         }
@@ -29,29 +29,29 @@ class NextcloudResponse
 
     /**
      * Returns nextcloud status message
-     * @return string
+     * @return string|null
      */
     public function getStatus() {
 
-        return (string)$this->body->meta->status;
+        return $this->body['meta']['status'] ?? null;
     }
 
     /**
      * Returns nextcloud message
-     * @return string
+     * @return string|null
      */
     public function getMessage() {
 
-        return (isset($this->body->meta->message) ? (string)$this->body->meta->message : null);
+        return $this->body['meta']['message'] ?? null;
     }
 
     /**
      * Returns nextcloud status code
-     * @return int
+     * @return int|null
      */
     public function getStatusCode() {
 
-        return intval($this->body->meta->statuscode);
+        return $this->body['meta']['statuscode'] ?? null;
     }
 
     /**
@@ -60,8 +60,7 @@ class NextcloudResponse
      */
     public function getData() {
 
-        $data   = $this->body->data;
-        return empty((string)$data) ? null : $this->xml2array($data);
+        return $this->body['data'] ?? null;
     }
 
     /**
@@ -71,18 +70,5 @@ class NextcloudResponse
     public function getRawResponse() {
 
         return $this->guzzle;
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     * @param array $out
-     * @return array
-     */
-    protected function xml2array(\SimpleXMLElement $xml, $out = []) {
-
-        foreach( (array)$xml as $index => $node)
-            $out[$index] = $node instanceof \SimpleXMLElement ? $this->xml2array($node) : $node;
-
-        return $out;
     }
 }

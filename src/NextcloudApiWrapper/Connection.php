@@ -34,7 +34,7 @@ class Connection
      */
     public function __construct($basePath, $username, $password)
     {
-        $this->guzzle   = new Client(['base_uri' => $basePath]);
+        $this->guzzle   = new Client(['base_uri' => $basePath, 'cookies' => true, 'query' => ['format' => 'json']]);
         $this->username = $username;
         $this->password = $password;
     }
