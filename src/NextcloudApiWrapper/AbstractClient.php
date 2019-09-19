@@ -47,6 +47,6 @@ abstract class AbstractClient
      */
     public function buildUriParams(array $params = []) {
 
-        return empty($params) ? '' : '?' . http_build_query($params);
+        return '?' . http_build_query(array_merge(['format' => 'json'], $params));
     }
 }
