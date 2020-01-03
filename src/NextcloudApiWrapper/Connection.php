@@ -93,7 +93,8 @@ class Connection
 
         return [
             RequestOptions::HEADERS => [
-                'OCS-APIRequest'    => 'true'
+                'OCS-APIRequest'    => 'true',
+                'Accept'            => 'application/json',
             ],
 
             RequestOptions::AUTH    => [
